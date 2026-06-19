@@ -83,6 +83,7 @@ export const callLayer = new GeoJSONLayer({
   },
   labelingInfo: [{
     labelExpressionInfo: { expression: "$feature.label" },
+    labelPlacement: "below-center",
     symbol: {
       type: "text",
       color: "#00b4ff",
