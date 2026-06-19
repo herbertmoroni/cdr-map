@@ -20,6 +20,8 @@ This project is a GIS investigation map built to explore the ArcGIS Maps SDK for
 
 The data comes from a telecommunications CDR billing extract containing call records linked to ERB metadata including azimuth and coverage radius per antenna sector.
 
+![Telefonemas CDR Map](images/demo.png)
+
 [Software Demo Video](http://youtube.link.goes.here)
 
 # Development Environment
