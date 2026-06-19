@@ -1,6 +1,6 @@
-import SimpleRenderer    from "https://js.arcgis.com/4.29/@arcgis/core/renderers/SimpleRenderer.js";
-import HeatmapRenderer   from "https://js.arcgis.com/4.29/@arcgis/core/renderers/HeatmapRenderer.js";
-import PictureMarkerSymbol from "https://js.arcgis.com/4.29/@arcgis/core/symbols/PictureMarkerSymbol.js";
+import SimpleRenderer    from "https://js.arcgis.com/5.0/@arcgis/core/renderers/SimpleRenderer.js";
+import HeatmapRenderer   from "https://js.arcgis.com/5.0/@arcgis/core/renderers/HeatmapRenderer.js";
+import PictureMarkerSymbol from "https://js.arcgis.com/5.0/@arcgis/core/symbols/PictureMarkerSymbol.js";
 
 // Individual call point — phone icon
 export const clusterRenderer = new SimpleRenderer({

@@ -1,4 +1,4 @@
-import GeoJSONLayer from "https://js.arcgis.com/4.29/@arcgis/core/layers/GeoJSONLayer.js";
+import GeoJSONLayer from "https://js.arcgis.com/5.0/@arcgis/core/layers/GeoJSONLayer.js";
 import CALLS from "./data.js";
 import { clusterRenderer, featureReductionConfig } from "./renderers.js";
 
@@ -26,7 +26,7 @@ const geojson = {
 const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
 const url  = URL.createObjectURL(blob);
 
-// 6 unique ERB coordinates cover all 120 calls — clustering prevents stacked points
+// 6 unique ERB coordinates cover all 112 calls — clustering prevents stacked points
 // from appearing as a single marker at each tower location
 export const layer = new GeoJSONLayer({
   url,

@@ -1,6 +1,6 @@
-import esriConfig from "https://js.arcgis.com/4.29/@arcgis/core/config.js";
-import Map        from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
-import MapView    from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
+import esriConfig from "https://js.arcgis.com/5.0/@arcgis/core/config.js";
+import Map        from "https://js.arcgis.com/5.0/@arcgis/core/Map.js";
+import MapView    from "https://js.arcgis.com/5.0/@arcgis/core/views/MapView.js";
 
 import { API_KEY, MAP_CENTER, MAP_ZOOM } from "./config.js";
 import { layer }                          from "./layer.js";
