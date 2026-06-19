@@ -2,9 +2,7 @@
 // one record per call event. Each record maps to the ERB (Estação Rádio Base / cell tower)
 // that handled the call.
 //
-// Source: data/Telefonemas.csv
-// Columns used: Origem, Destino, Data, Hora, Duração, Estação, Nome, Bairro, Logradouro, Latitude Dec, Longitude Dec
-// Index-based access avoids encoding issues with accented column names (Duração, Estação, etc.)
+// Index-based column access avoids encoding issues with accented headers (Duração, Estação, etc.)
 
 const response = await fetch("data/Telefonemas.csv");
 const text     = await response.text();
@@ -18,12 +16,16 @@ const CALLS = text.trim().split("\n").slice(1).map(line => {
     data:    `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y.trim()}`, // DD/MM/YYYY
     hora:    v[3].trim(),
     duracao: Number(v[4].trim()),
-    estacao:    v[5].trim(),   // station ID e.g. 683764837
-    nome:       v[6].trim(),   // station name e.g. SPMR06
+    estacao:    v[5].trim(),
+    nome:       v[6].trim(),
     bairro:     v[10].trim(),
-    logradouro: v[11].trim(),  // street address
-    lat:        Number(v[12].trim()),
-    lon:        Number(v[13].trim())
+    logradouro: v[11].trim(),
+    lat:     Number(v[12].trim()),
+    lon:     Number(v[13].trim()),
+    // azimute: direction the antenna sector faces (degrees from North, clockwise)
+    // CDR records which sector handled the call, not the caller's exact location
+    azimute: Number(v[15].trim()),
+    raio:    Number(v[16].trim())
   };
 });
 

@@ -2,36 +2,44 @@ import GeoJSONLayer from "https://js.arcgis.com/5.0/@arcgis/core/layers/GeoJSONL
 import CALLS from "./data.js";
 import { callRenderer } from "./renderers.js";
 
-// Golden angle (137.508°) spiral — deterministic scatter with no overlap bias.
-// Applied per-tower so each tower's calls fan out evenly around it.
-// 6 unique ERB coordinates cover all 112 calls; without scatter, all points at
-// the same tower stack invisibly on a single pixel.
-const GOLDEN = 137.508 * (Math.PI / 180);
+// CDR records which antenna sector handled each call (azimute = direction from North, clockwise).
+// The caller was somewhere inside that sector — we position markers in the azimuth direction
+// at increasing distances so same-sector calls fan out visually rather than stacking.
+// This is the most geographically accurate placement possible from CDR data alone.
+
 /** @type {Record<string, number>} */
-const towerCount = {};
+const sectorCount = {};
 
 const geojson = {
   type: "FeatureCollection",
   features: CALLS.map((c, i) => {
-    const ti    = towerCount[c.nome] ?? 0;
-    towerCount[c.nome] = ti + 1;
+    const key = `${c.nome}_${c.azimute}`;
+    const si  = sectorCount[key] ?? 0;
+    sectorCount[key] = si + 1;
 
-    // Radius grows with sqrt(ti) — inner calls pack tightly, outer calls spread.
-    // 0.002° base ≈ 220m; max ~20 calls per tower → max offset ~0.009° ≈ 850m
-    const angle = ti * GOLDEN;
-    const r     = 0.002 * Math.sqrt(ti + 1);
+    const az_rad = c.azimute * (Math.PI / 180);
+    const spread = ((si % 5) - 2) * 0.42; // ±48° arc spread across 5 slots so markers don't overlap
+    const angle  = az_rad + spread;
+
+    // Distance from tower grows with sector index: starts at 150 m, approaches coverage radius (capped at 1500 m)
+    const dist_m   = 150 + si * (Math.min(c.raio, 1500) / 20);
+    const dist_deg = dist_m / 111000;
+
+    // Azimuth from North: lat offset = cos(az), lon offset = sin(az) / cos(lat) — corrects for meridian convergence
+    const lat_offset = dist_deg * Math.cos(angle);
+    const lon_offset = dist_deg * Math.sin(angle) / Math.cos(c.lat * (Math.PI / 180));
 
     return {
       type: "Feature",
       id: i,
       geometry: {
         type: "Point",
-        coordinates: [c.lon + r * Math.cos(angle), c.lat + r * Math.sin(angle)]
+        coordinates: [c.lon + lon_offset, c.lat + lat_offset]
       },
       properties: {
         origem:  c.origem,
         destino: c.destino,
-        data:    c.data,  // DD/MM/YYYY from CSV parser
+        data:    c.data,
         hora:    c.hora,
         duracao: c.duracao,
         estacao: c.nome,

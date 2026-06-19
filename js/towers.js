@@ -2,20 +2,18 @@ import GeoJSONLayer from "https://js.arcgis.com/5.0/@arcgis/core/layers/GeoJSONL
 import CALLS from "./data.js";
 import { towerRenderer } from "./renderers.js";
 
-// Dedupe by station name — first occurrence per tower gives coordinates + metadata
 const seen = new Set();
-const towers = CALLS.filter(c => seen.has(c.nome) ? false : seen.add(c.nome));
+const uniqueTowers = CALLS.filter(c => seen.has(c.nome) ? false : seen.add(c.nome));
 
-// Total calls handled per tower
 /** @type {Record<string, number>} */
-const callCount = CALLS.reduce((acc, c) => {
+const callsPerTower = CALLS.reduce((acc, c) => {
   acc[c.nome] = (acc[c.nome] ?? 0) + 1;
   return acc;
 }, {});
 
 const geojson = {
   type: "FeatureCollection",
-  features: towers.map((t, i) => ({
+  features: uniqueTowers.map((t, i) => ({
     type: "Feature",
     id: i,
     geometry: { type: "Point", coordinates: [t.lon, t.lat] },
@@ -24,7 +22,7 @@ const geojson = {
       estacao:    t.estacao,
       bairro:     t.bairro,
       logradouro: t.logradouro,
-      totalCalls: callCount[t.nome]
+      totalCalls: callsPerTower[t.nome]
     }
   }))
 };
