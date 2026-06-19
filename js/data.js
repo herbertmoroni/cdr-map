@@ -3,7 +3,7 @@
 // that handled the call.
 //
 // Source: data/Telefonemas.csv
-// Columns used: Origem, Destino, Data, Hora, Duração, Nome, Bairro, Latitude Dec, Longitude Dec
+// Columns used: Origem, Destino, Data, Hora, Duração, Estação, Nome, Bairro, Logradouro, Latitude Dec, Longitude Dec
 // Index-based access avoids encoding issues with accented column names (Duração, Estação, etc.)
 
 const response = await fetch("data/Telefonemas.csv");
@@ -18,10 +18,12 @@ const CALLS = text.trim().split("\n").slice(1).map(line => {
     data:    `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y.trim()}`, // DD/MM/YYYY
     hora:    v[3].trim(),
     duracao: Number(v[4].trim()),
-    nome:    v[6].trim(),  // station name e.g. SPMR06
-    bairro:  v[10].trim(),
-    lat:     Number(v[12].trim()),
-    lon:     Number(v[13].trim())
+    estacao:    v[5].trim(),   // station ID e.g. 683764837
+    nome:       v[6].trim(),   // station name e.g. SPMR06
+    bairro:     v[10].trim(),
+    logradouro: v[11].trim(),  // street address
+    lat:        Number(v[12].trim()),
+    lon:        Number(v[13].trim())
   };
 });
 

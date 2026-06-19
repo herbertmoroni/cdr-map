@@ -1,36 +1,51 @@
 import GeoJSONLayer from "https://js.arcgis.com/5.0/@arcgis/core/layers/GeoJSONLayer.js";
 import CALLS from "./data.js";
-import { clusterRenderer, featureReductionConfig } from "./renderers.js";
+import { callRenderer } from "./renderers.js";
 
-// Build GeoJSON from CDR records
+// Golden angle (137.508°) spiral — deterministic scatter with no overlap bias.
+// Applied per-tower so each tower's calls fan out evenly around it.
+// 6 unique ERB coordinates cover all 112 calls; without scatter, all points at
+// the same tower stack invisibly on a single pixel.
+const GOLDEN = 137.508 * (Math.PI / 180);
+/** @type {Record<string, number>} */
+const towerCount = {};
+
 const geojson = {
   type: "FeatureCollection",
-  features: CALLS.map((c, i) => ({
-    type: "Feature",
-    id: i,
-    geometry: { type: "Point", coordinates: [c.lon, c.lat] },
-    properties: {
-      origem:  c.origem,
-      destino: c.destino,
-      data:    c.data, // already DD/MM/YYYY from the CSV parser
-      hora:    c.hora,
-      duracao: c.duracao,
-      estacao: c.nome,
-      bairro:  c.bairro,
-      label:   `...${c.origem.slice(-4)} ${c.hora.slice(0, 5)}`
-    }
-  }))
+  features: CALLS.map((c, i) => {
+    const ti    = towerCount[c.nome] ?? 0;
+    towerCount[c.nome] = ti + 1;
+
+    // Radius grows with sqrt(ti) — inner calls pack tightly, outer calls spread.
+    // 0.002° base ≈ 220m; max ~20 calls per tower → max offset ~0.009° ≈ 850m
+    const angle = ti * GOLDEN;
+    const r     = 0.002 * Math.sqrt(ti + 1);
+
+    return {
+      type: "Feature",
+      id: i,
+      geometry: {
+        type: "Point",
+        coordinates: [c.lon + r * Math.cos(angle), c.lat + r * Math.sin(angle)]
+      },
+      properties: {
+        origem:  c.origem,
+        destino: c.destino,
+        data:    c.data,  // DD/MM/YYYY from CSV parser
+        hora:    c.hora,
+        duracao: c.duracao,
+        estacao: c.nome,
+        bairro:  c.bairro,
+        label:   `...${c.origem.slice(-4)} ${c.hora.slice(0, 5)}`
+      }
+    };
+  })
 };
 
-// Blob URL lets GeoJSONLayer consume in-memory data without a server
 const blob = new Blob([JSON.stringify(geojson)], { type: "application/json" });
-const url  = URL.createObjectURL(blob);
 
-// 6 unique ERB coordinates cover all 112 calls — clustering prevents stacked points
-// from appearing as a single marker at each tower location
-export const layer = new GeoJSONLayer({
-  url,
-  // Explicit field declarations prevent ArcGIS from auto-detecting types
+export const callLayer = new GeoJSONLayer({
+  url: URL.createObjectURL(blob),
   fields: [
     { name: "origem",  type: "string"  },
     { name: "destino", type: "string"  },
@@ -42,20 +57,19 @@ export const layer = new GeoJSONLayer({
     { name: "label",   type: "string"  }
   ],
   objectIdField: "ObjectID",
-  renderer: clusterRenderer,
-  featureReduction: featureReductionConfig,
+  renderer: callRenderer,
   popupTemplate: {
     title: "📞 Call event",
     content: [{
       type: "fields",
       fieldInfos: [
-        { fieldName: "origem",  label: "Origin"        },
-        { fieldName: "destino", label: "Destination"   },
-        { fieldName: "data",    label: "Date"          },
-        { fieldName: "hora",    label: "Time"          },
-        { fieldName: "duracao", label: "Duration (s)"  },
-        { fieldName: "estacao", label: "Tower"         },
-        { fieldName: "bairro",  label: "Neighborhood"  }
+        { fieldName: "origem",  label: "Origin"       },
+        { fieldName: "destino", label: "Destination"  },
+        { fieldName: "data",    label: "Date"         },
+        { fieldName: "hora",    label: "Time"         },
+        { fieldName: "duracao", label: "Duration (s)" },
+        { fieldName: "estacao", label: "Tower"        },
+        { fieldName: "bairro",  label: "Neighborhood" }
       ]
     }]
   },
@@ -68,6 +82,6 @@ export const layer = new GeoJSONLayer({
       haloSize: "1px",
       font: { size: 9 }
     },
-    minScale: 50000 // labels appear only when zoomed in enough to see individual markers
+    minScale: 50000
   }]
 });

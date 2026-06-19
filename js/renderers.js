@@ -1,13 +1,22 @@
-import SimpleRenderer    from "https://js.arcgis.com/5.0/@arcgis/core/renderers/SimpleRenderer.js";
-import HeatmapRenderer   from "https://js.arcgis.com/5.0/@arcgis/core/renderers/HeatmapRenderer.js";
+import SimpleRenderer      from "https://js.arcgis.com/5.0/@arcgis/core/renderers/SimpleRenderer.js";
+import HeatmapRenderer     from "https://js.arcgis.com/5.0/@arcgis/core/renderers/HeatmapRenderer.js";
 import PictureMarkerSymbol from "https://js.arcgis.com/5.0/@arcgis/core/symbols/PictureMarkerSymbol.js";
 
-// Individual call point — phone icon
-export const clusterRenderer = new SimpleRenderer({
+// Individual call event — phone icon
+export const callRenderer = new SimpleRenderer({
   symbol: new PictureMarkerSymbol({
     url: "images/phone.png",
     width: "20px",
     height: "20px"
+  })
+});
+
+// ERB tower locations — SVG icon with built-in dark background
+export const towerRenderer = new SimpleRenderer({
+  symbol: new PictureMarkerSymbol({
+    url: "images/erb-icon.svg",
+    width: "36px",
+    height: "36px"
   })
 });
 
@@ -32,31 +41,3 @@ export const heatmapRenderer = new HeatmapRenderer({
   maxDensity: 0.01,
   minDensity: 0
 });
-
-// featureReductionConfig is exported as a plain object so it can be safely
-// reused both at layer creation and when the heatmap toggle restores clustering
-export const featureReductionConfig = {
-  type: "cluster",
-  // SVG icon with built-in dark background — readable on any basemap
-  symbol: {
-    type: "picture-marker",
-    url: "images/erb-icon.svg",
-    width: "36px",
-    height: "36px"
-  },
-  // Small radius keeps each of the 6 tower locations as a separate cluster bubble;
-  // points at the exact same coordinates always cluster regardless of radius
-  clusterRadius: "15px",
-  popupTemplate: {
-    title: "Cluster: {cluster_count} calls",
-    content: "Zoom in to see individual call events."
-  },
-  labelingInfo: [{
-    labelExpressionInfo: { expression: "$feature.cluster_count" },
-    symbol: {
-      type: "text",
-      color: "#ffffff",
-      font: { size: 10, weight: "bold" }
-    }
-  }]
-};
