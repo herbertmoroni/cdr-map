@@ -1,6 +1,7 @@
 import GeoJSONLayer from "https://js.arcgis.com/5.0/@arcgis/core/layers/GeoJSONLayer.js";
 import CALLS from "./data.js";
 import { callRenderer } from "./renderers.js";
+import { SECTOR_HALF_ANGLE_DEG, SECTOR_MAX_RADIUS_M } from "./constants.js";
 
 // CDR records which antenna sector handled each call (azimute = direction from North, clockwise).
 // The caller was somewhere inside that sector — we position markers in the azimuth direction
@@ -17,12 +18,14 @@ const geojson = {
     const si  = sectorCount[key] ?? 0;
     sectorCount[key] = si + 1;
 
-    const az_rad = c.azimute * (Math.PI / 180);
-    const spread = ((si % 5) - 2) * 0.42; // ±48° arc spread across 5 slots so markers don't overlap
-    const angle  = az_rad + spread;
+    const az_rad   = c.azimute * (Math.PI / 180);
+    // Keep spread within 80% of the wedge half-angle so markers stay inside the sector polygon
+    const spread   = ((si % 5) - 2) * (SECTOR_HALF_ANGLE_DEG * Math.PI / 180 * 0.8 / 2);
+    const angle    = az_rad + spread;
 
-    // Distance from tower grows with sector index: starts at 150 m, approaches coverage radius (capped at 1500 m)
-    const dist_m   = 150 + si * (Math.min(c.raio, 1500) / 20);
+    // Distance grows with sector index but is capped at 90% of the sector radius so markers stay inside the wedge arc
+    const raio_m   = Math.min(c.raio, SECTOR_MAX_RADIUS_M);
+    const dist_m   = Math.min(150 + si * (raio_m / 20), raio_m * 0.9);
     const dist_deg = dist_m / 111000;
 
     // Azimuth from North: lat offset = cos(az), lon offset = sin(az) / cos(lat) — corrects for meridian convergence

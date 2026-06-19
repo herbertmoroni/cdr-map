@@ -2,15 +2,14 @@ import GeoJSONLayer    from "https://js.arcgis.com/5.0/@arcgis/core/layers/GeoJS
 import SimpleRenderer   from "https://js.arcgis.com/5.0/@arcgis/core/renderers/SimpleRenderer.js";
 import SimpleFillSymbol from "https://js.arcgis.com/5.0/@arcgis/core/symbols/SimpleFillSymbol.js";
 import CALLS from "./data.js";
+import { SECTOR_HALF_ANGLE_DEG, SECTOR_MAX_RADIUS_M } from "./constants.js";
 
 // CDR sector visualization: each unique (tower, azimuth) pair maps to a pie-slice polygon
 // showing the coverage zone where the caller was physically located.
 // This is standard forensic CDR mapping — the call was handled by this sector,
 // so the caller was somewhere inside this wedge.
 
-const HALF_ANGLE_DEG = 30; // standard 60° sector sweep (±30° from antenna face)
-const ARC_STEPS      = 10; // points along the arc for a smooth wedge edge
-const MAX_RADIUS_M   = 1500;
+const ARC_STEPS = 10; // points along the arc for a smooth wedge curve
 
 /** @type {Record<string, { lat:number, lon:number, azimute:number, raio:number, nome:string, bairro:string, count:number }>} */
 const sectorMap = {};
@@ -24,12 +23,12 @@ for (const c of CALLS) {
 
 function wedgeRing(lat, lon, azimuth_deg, radius_m) {
   const lat_rad  = lat * (Math.PI / 180);
-  const dist_deg = Math.min(radius_m, MAX_RADIUS_M) / 111000;
+  const dist_deg = Math.min(radius_m, SECTOR_MAX_RADIUS_M) / 111000;
   const ring     = [[lon, lat]]; // apex at tower
 
   // Arc from left edge to right edge of sector
   for (let step = 0; step <= ARC_STEPS; step++) {
-    const angle_deg = (azimuth_deg - HALF_ANGLE_DEG) + (2 * HALF_ANGLE_DEG * step / ARC_STEPS);
+    const angle_deg = (azimuth_deg - SECTOR_HALF_ANGLE_DEG) + (2 * SECTOR_HALF_ANGLE_DEG * step / ARC_STEPS);
     const angle_rad = angle_deg * (Math.PI / 180);
     // Azimuth from North: lat offset = cos(az), lon offset = sin(az) / cos(lat)
     ring.push([
