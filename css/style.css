@@ -5,11 +5,8 @@ html, body, #viewDiv {
   padding: 0;
 }
 
+/* Placement is handled by view.ui.add() in app.js — only styling lives here. */
 #toggleBtn {
-  position: absolute;
-  bottom: 30px;
-  right: 15px;
-  z-index: 99;
   background: #1a1a2e;
   color: #e0e0e0;
   border: 1px solid #444;

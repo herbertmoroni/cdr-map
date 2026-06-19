@@ -12,19 +12,12 @@ export const towerRenderer = new SimpleRenderer({
 
 export const heatmapRenderer = new HeatmapRenderer({
   colorStops: [
-    { color: "rgba(63, 40, 102, 0)", ratio: 0     },
-    { color: "#472b77",              ratio: 0.083 },
-    { color: "#4e2d87",              ratio: 0.166 },
-    { color: "#563098",              ratio: 0.249 },
-    { color: "#5d32a8",              ratio: 0.332 },
-    { color: "#6735be",              ratio: 0.415 },
-    { color: "#7139d4",              ratio: 0.498 },
-    { color: "#7b3ce9",              ratio: 0.581 },
-    { color: "#853fff",              ratio: 0.664 },
-    { color: "#a46fbf",              ratio: 0.747 },
-    { color: "#c29f80",              ratio: 0.83  },
-    { color: "#e0cf40",              ratio: 0.913 },
-    { color: "#ffff00",              ratio: 1     }
+    { color: "rgba(0, 0, 0, 0)", ratio: 0   }, // transparent where there are no calls
+    { color: "#2b83ba",          ratio: 0.2 }, // blue   — low density
+    { color: "#abdda4",          ratio: 0.4 }, // green
+    { color: "#ffffbf",          ratio: 0.6 }, // yellow
+    { color: "#fdae61",          ratio: 0.8 }, // orange
+    { color: "#d7191c",          ratio: 1   }  // red    — high density
   ],
   radius: 20
 });
