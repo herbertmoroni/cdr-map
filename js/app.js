@@ -22,8 +22,9 @@ let heatmapOn = false;
 
 toggleBtn.addEventListener("click", () => {
   heatmapOn = !heatmapOn;
-  callLayer.renderer  = heatmapOn ? heatmapRenderer : callRenderer;
-  toggleBtn.textContent = heatmapOn ? "📍 Show Markers" : "🔥 Show Heatmap";
+  callLayer.renderer      = heatmapOn ? heatmapRenderer : callRenderer;
+  callLayer.labelsVisible = !heatmapOn;
+  toggleBtn.textContent   = heatmapOn ? "📍 Show Markers" : "🔥 Show Heatmap";
 });
 
 sectorBtn.addEventListener("click", () => {
