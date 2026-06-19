@@ -5,8 +5,8 @@ html, body, #viewDiv {
   padding: 0;
 }
 
-/* Placement is handled by view.ui.add() in app.js — only styling lives here. */
-#toggleBtn {
+/* Placement handled by view.ui.add() — only visual styling here. */
+#toggleBtn, #sectorBtn {
   background: #1a1a2e;
   color: #e0e0e0;
   border: 1px solid #444;
@@ -16,6 +16,6 @@ html, body, #viewDiv {
   cursor: pointer;
 }
 
-#toggleBtn:hover {
+#toggleBtn:hover, #sectorBtn:hover {
   background: #2a2a4e;
 }

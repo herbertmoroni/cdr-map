@@ -44,7 +44,7 @@ const geojson = {
         duracao: c.duracao,
         estacao: c.nome,
         bairro:  c.bairro,
-        label:   `...${c.origem.slice(-4)} ${c.hora.slice(0, 5)}`
+        label:   c.origem
       }
     };
   })

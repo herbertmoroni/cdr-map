@@ -15,12 +15,18 @@ const map = new Map({ basemap: "osm", layers: [sectorLayer, callLayer, towerLaye
 const view = new MapView({ container: "viewDiv", map, center: MAP_CENTER, zoom: MAP_ZOOM });
 
 const toggleBtn = document.getElementById("toggleBtn");
-view.ui.add(toggleBtn, "bottom-right");
+const sectorBtn  = document.getElementById("sectorBtn");
+view.ui.add([toggleBtn, sectorBtn], "bottom-right");
 
 let heatmapOn = false;
 
 toggleBtn.addEventListener("click", () => {
   heatmapOn = !heatmapOn;
-  callLayer.renderer = heatmapOn ? heatmapRenderer : callRenderer;
+  callLayer.renderer  = heatmapOn ? heatmapRenderer : callRenderer;
   toggleBtn.textContent = heatmapOn ? "📍 Show Markers" : "🔥 Show Heatmap";
+});
+
+sectorBtn.addEventListener("click", () => {
+  sectorLayer.visible   = !sectorLayer.visible;
+  sectorBtn.textContent = sectorLayer.visible ? "📡 Hide Sectors" : "📡 Show Sectors";
 });
