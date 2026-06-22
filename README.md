@@ -39,7 +39,6 @@ No install steps, no build process.
 
 * [CDR Analysis 101 — What Call Detail Records Reveal in Investigations](https://www.penlink.com/blog/cdr-analysis-101-what-call-detail-records-can-reveal-in-complex-cases/)
 * [Analyzing Call Detail Records with Connected Data](https://policinginsight.com/feature/analyzing-call-detail-records-with-connected-data/)
-* [ArcGIS Maps SDK for JavaScript — API Reference](https://developers.arcgis.com/javascript/latest/api-reference/)
 * [GeoJSONLayer Documentation](https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-GeoJSONLayer.html)
 * [FeatureReduction Clustering](https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-support-FeatureReductionCluster.html)
 
