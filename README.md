@@ -16,7 +16,7 @@ Each marker represents a single call event, placed inside the antenna sector tha
 
 ![CDR Map](images/demo.png)
 
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/oBetn0pWCQE)
 
 # Development Environment
 
